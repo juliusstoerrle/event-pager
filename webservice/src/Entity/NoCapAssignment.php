@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class NoCapAssignment extends AbstractCapAssignment
 {
+    public const string DISCRIMINATOR = 'nocapassignment';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

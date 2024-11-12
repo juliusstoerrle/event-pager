@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class IndividualCapAssignment extends AbstractCapAssignment
 {
+    public const string DISCRIMINATOR = 'individualcapassignment';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
