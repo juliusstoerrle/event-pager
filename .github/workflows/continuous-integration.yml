@@ -145,7 +145,7 @@ jobs:
         run: docker compose exec -T php bin/console -e test doctrine:schema:create --no-interaction
 
       - name: Doctrine Schema Validator
-        run: docker compose exec -T php bin/console -e test doctrine:schema:validate
+        run: docker compose exec -T php bin/console -e test doctrine:schema:validate -v
 
       - name: Run PHPUnit
         run: docker compose exec -T php composer run test:coverage
