@@ -11,6 +11,7 @@ doctrine:
             instant:  'App\Infrastructure\Doctrine\DBAL\Type\InstantType'
             local_datetime:  'App\Infrastructure\Doctrine\DBAL\Type\LocalDateTimeType'
             local_time:  'App\Infrastructure\Doctrine\DBAL\Type\LocalTimeType'
+            ulid_array:  'App\Infrastructure\Doctrine\DBAL\Type\UlidArrayType'
         use_savepoints: true
     orm:
         auto_generate_proxy_classes: true
