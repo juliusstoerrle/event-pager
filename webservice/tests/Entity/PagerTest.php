@@ -14,7 +14,7 @@ final class PagerTest extends TestCase
 {
     public function testCapAssignment(): void
     {
-        $pager = new Pager("Pager 1", 3);
+        $pager = new Pager('Pager 1', 3);
         $channel = new Channel();
 
         $pager
