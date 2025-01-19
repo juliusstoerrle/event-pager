@@ -5,7 +5,7 @@ namespace App\Core\IntelPage\Model;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class ChannelCapAssignment extends AbstractCapAssignment
+readonly class ChannelCapAssignment extends AbstractCapAssignment
 {
     public const string DISCRIMINATOR = 'channelcapassignment';
 
@@ -31,12 +31,5 @@ class ChannelCapAssignment extends AbstractCapAssignment
     public function getChannel(): Channel
     {
         return $this->channel;
-    }
-
-    public function setChannel(Channel $channel): static
-    {
-        $this->channel = $channel;
-
-        return $this;
     }
 }

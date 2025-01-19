@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Pager
 {
+    public const int PAGER_SLOT_MIN = 0;
+    public const int PAGER_SLOT_MAX = 7;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -52,7 +54,7 @@ class Pager
 
     private function isInSlotBounds(int $slot): bool
     {
-        return ($slot >= 0) && ($slot < 8); // TODO const
+        return ($slot >= self::PAGER_SLOT_MIN) && ($slot <= self::PAGER_SLOT_MAX);
     }
 
     public function getCapAssignment(int $atSlot): AbstractCapAssignment

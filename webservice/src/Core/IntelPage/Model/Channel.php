@@ -18,6 +18,12 @@ class Channel
     #[ORM\Embedded]
     private CapCode $capCode;
 
+    #[ORM\Column]
+    private bool $audible;
+
+    #[ORM\Column]
+    private bool $vibration;
+
     public function getCapCode(): CapCode
     {
         return $this->capCode;
@@ -31,6 +37,30 @@ class Channel
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function isAudible(): bool
+    {
+        return $this->audible;
+    }
+
+    public function setAudible(bool $audible): static
+    {
+        $this->audible = $audible;
+
+        return $this;
+    }
+
+    public function isVibration(): bool
+    {
+        return $this->vibration;
+    }
+
+    public function setVibration(bool $vibration): static
+    {
+        $this->vibration = $vibration;
+
+        return $this;
     }
 
     public function getName(): ?string

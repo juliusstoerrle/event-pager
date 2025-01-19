@@ -5,7 +5,7 @@ namespace App\Core\IntelPage\Model;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class NoCapAssignment extends AbstractCapAssignment
+readonly class NoCapAssignment extends AbstractCapAssignment
 {
     public const string DISCRIMINATOR = 'nocapassignment';
 

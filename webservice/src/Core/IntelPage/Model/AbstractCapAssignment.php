@@ -9,68 +9,37 @@ use Doctrine\ORM\Mapping as ORM;
 #[
     ORM\DiscriminatorMap([
         NoCapAssignment::DISCRIMINATOR => NoCapAssignment::class,
-        IndividualCapAssignment::DISCRIMINATOR =>
-            IndividualCapAssignment::class,
+        IndividualCapAssignment::DISCRIMINATOR => IndividualCapAssignment::class,
         ChannelCapAssignment::DISCRIMINATOR => ChannelCapAssignment::class,
     ])
 ]
-abstract class AbstractCapAssignment
+readonly abstract class AbstractCapAssignment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
-    #[ORM\Column]
-    private int $slot;
+    #[ORM\Embedded]
+    private Slot $slot;
 
     #[ORM\ManyToOne(targetEntity: Pager::class, inversedBy: "slots")]
     #[ORM\JoinColumn(name: "pager_id", referencedColumnName: "id")]
     private Pager $pager;
-
-    #[ORM\Column]
-    private bool $audible;
-
-    #[ORM\Column]
-    private bool $vibration;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getSlot(): int
+    public function getSlot(): Slot
     {
         return $this->slot;
     }
 
-    public function setSlot(int $slot): static
+    public function setSlot(Slot $slot): static
     {
         $this->slot = $slot;
-
-        return $this;
-    }
-
-    public function isAudible(): bool
-    {
-        return $this->audible;
-    }
-
-    public function setAudible(bool $audible): static
-    {
-        $this->audible = $audible;
-
-        return $this;
-    }
-
-    public function isVibration(): bool
-    {
-        return $this->vibration;
-    }
-
-    public function setVibration(bool $vibration): static
-    {
-        $this->vibration = $vibration;
 
         return $this;
     }

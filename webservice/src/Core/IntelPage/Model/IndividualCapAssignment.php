@@ -5,7 +5,7 @@ namespace App\Core\IntelPage\Model;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class IndividualCapAssignment extends AbstractCapAssignment
+readonly class IndividualCapAssignment extends AbstractCapAssignment
 {
     public const string DISCRIMINATOR = 'individualcapassignment';
 
@@ -15,7 +15,7 @@ class IndividualCapAssignment extends AbstractCapAssignment
     private int $id;
 
     #[ORM\Embedded]
-    private readonly CapCode $capCode;
+    private CapCode $capCode;
 
     #[ORM\Column]
     private bool $audible;
@@ -35,13 +35,6 @@ class IndividualCapAssignment extends AbstractCapAssignment
         return $this->capCode;
     }
 
-    public function setCapCode(CapCode $capCode): static
-    {
-        $this->capCode = $capCode;
-
-        return $this;
-    }
-
     public function getId(): int
     {
         return $this->id;
@@ -52,22 +45,8 @@ class IndividualCapAssignment extends AbstractCapAssignment
         return $this->audible;
     }
 
-    public function setAudible(bool $audible): static
-    {
-        $this->audible = $audible;
-
-        return $this;
-    }
-
     public function isVibration(): bool
     {
         return $this->vibration;
-    }
-
-    public function setVibration(bool $vibration): static
-    {
-        $this->vibration = $vibration;
-
-        return $this;
     }
 }
