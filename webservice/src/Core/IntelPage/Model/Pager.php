@@ -73,13 +73,27 @@ class Pager
 
     public function assignCap(AbstractCapAssignment $assignment): static
     {
-        if (!$this->isInSlotBounds($assignment->getSlot())) {
-            throw new \InvalidArgumentException('Trying to access out of bounds slot!');
-        }
-
         $this->slots->set($assignment->getSlot(), $assignment);
 
         return $this;
+    }
+
+    public function assignIndividualCap(IndividualCapAssignment $assignment): static
+    {
+        // NOTE: Should probably inform the caller, that, if the slot is already taken,
+        //       the previous assignment is now overwritten (or provide an option not
+        //       to do that)
+        $this->slots->set($assignment->getSlot(), $assignment);
+        return $this;
+    }
+
+    public function assignChannel(Channel $channel): static
+    {
+        // NOTE: Should probably inform the caller, that, if the slot is already taken,
+        //       the previous assignment is now overwritten (or provide an option not
+        //       to do that)
+        $assignment = $channel->getCapAssignment();
+        $this->slots->set($assignment->getSlot(), $assignment);
     }
 
     public function setLabel(string $label): static
