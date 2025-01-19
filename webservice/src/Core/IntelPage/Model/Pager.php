@@ -87,13 +87,12 @@ class Pager
         return $this;
     }
 
-    public function assignChannel(Channel $channel): static
+    public function assignChannel(Channel $channel, Slot $slot): static
     {
         // NOTE: Should probably inform the caller, that, if the slot is already taken,
         //       the previous assignment is now overwritten (or provide an option not
         //       to do that)
-        $assignment = $channel->getCapAssignment();
-        $this->slots->set($assignment->getSlot(), $assignment);
+        $this->slots->set($slot, new ChannelCapAssignment($channel));
     }
 
     public function setLabel(string $label): static

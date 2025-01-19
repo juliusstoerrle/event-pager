@@ -24,19 +24,6 @@ class Channel
     #[ORM\Column]
     private bool $vibration;
 
-    #[ORM\Embedded]
-    private Slot $slot;
-
-    public function getSlot(): Slot
-    {
-        return $this->slot;
-    }
-
-    public function setSlot(Slot $slot): void
-    {
-        $this->slot = $slot;
-    }
-
     public function getCapAssignment(): ChannelCapAssignment
     {
         return new ChannelCapAssignment($this);
