@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\IntelPage\Model;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -23,11 +25,6 @@ class Channel
 
     #[ORM\Column]
     private bool $vibration;
-
-    public function getCapAssignment(): ChannelCapAssignment
-    {
-        return new ChannelCapAssignment($this);
-    }
 
     public function getCapCode(): CapCode
     {

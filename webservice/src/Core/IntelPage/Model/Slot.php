@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Core\IntelPage\Model;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use InvalidArgumentException;
+use function sprintf;
 
 #[ORM\Embeddable]
-readonly class Slot {
-    #[ORM\Column(type: 'integer')]
+readonly class Slot
+{
+    #[ORM\Column]
     private int $slot;
 
     public const int SLOT_MAX = 7;
@@ -23,8 +25,13 @@ readonly class Slot {
     public function __construct(int $slot)
     {
         if (!$this->isInBounds($slot)) {
-            throw new \InvalidArgumentException("Slot value $slot out of bounds!");
+            throw new InvalidArgumentException(sprintf('Slot value %d out of bounds!', $slot));
         }
         $this->slot = $slot;
+    }
+
+    public function getSlot(): int
+    {
+        return $this->slot;
     }
 }

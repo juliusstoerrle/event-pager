@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Tests\Entity;
+declare(strict_types=1);
+
+namespace App\Tests\Core\IntelPage\Model;
 
 use App\Core\IntelPage\Model\CapCode;
 use App\Core\IntelPage\Model\Channel;
@@ -8,8 +10,11 @@ use App\Core\IntelPage\Model\ChannelCapAssignment;
 use App\Core\IntelPage\Model\IndividualCapAssignment;
 use App\Core\IntelPage\Model\NoCapAssignment;
 use App\Core\IntelPage\Model\Pager;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
+#[Group('unit')]
 final class PagerTest extends TestCase
 {
     public function testCapAssignment(): void
@@ -18,13 +23,13 @@ final class PagerTest extends TestCase
         $channel = new Channel();
 
         $pager->assignCap(0, new NoCapAssignment())
-            ->assignCap(1, new IndividualCapAssignment(false, false, new CapCode(1)))
+            ->assignCap(1, new IndividualCapAssignment(false, false, CapCode::fromInt(1)))
             ->assignCap(7, new ChannelCapAssignment($channel));
 
         $assignments = $pager->getCapAssignments();
-        $this->assertTrue($assignments[0] instanceof NoCapAssignment);
-        $this->assertTrue($assignments[1] instanceof IndividualCapAssignment);
-        $this->assertTrue($assignments[7] instanceof ChannelCapAssignment);
+        self::assertInstanceOf(NoCapAssignment::class, $assignments[0]);
+        self::assertInstanceOf(IndividualCapAssignment::class, $assignments[1]);
+        self::assertInstanceOf(ChannelCapAssignment::class, $assignments[7]);
     }
 
     public function testSlotOutOfBoundsUpper(): void
@@ -33,13 +38,13 @@ final class PagerTest extends TestCase
 
         try {
             $pager->assignCap(8, new NoCapAssignment());
-        } catch (\InvalidArgumentException $e) {
-            $this->assertTrue(true);
+        } catch (InvalidArgumentException $e) {
+            self::assertTrue(true);
 
             return;
         }
 
-        $this->fail('Assigned a CapAssignment out of bounds but shouldn\'t be able to!');
+        self::fail('Assigned a CapAssignment out of bounds but shouldn\'t be able to!');
     }
 
     public function testSlotOutOfBoundsLower(): void
@@ -48,12 +53,12 @@ final class PagerTest extends TestCase
 
         try {
             $pager->assignCap(-1, new NoCapAssignment());
-        } catch (\InvalidArgumentException $e) {
-            $this->assertTrue(true);
+        } catch (InvalidArgumentException $e) {
+            self::assertTrue(true);
 
             return;
         }
 
-        $this->fail();
+        self::fail();
     }
 }

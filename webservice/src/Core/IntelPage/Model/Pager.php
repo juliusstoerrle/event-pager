@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\IntelPage\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
+use function strlen;
 
 #[ORM\Entity]
 class Pager
@@ -15,14 +19,25 @@ class Pager
     #[ORM\GeneratedValue]
     #[ORM\Column]
     // ULID
-    private int $id;
+    private string $id;
 
+    /**
+     * @var string human identifier describing pager use
+     */
     #[ORM\Column(length: 255)]
     private string $label;
 
+    /**
+     * @var int human identifier as printed on the hardware
+     */
     #[ORM\Column]
     private int $number;
 
+    /**
+     * List of cap code assignments.
+     *
+     * @var Collection<int, AbstractCapAssignment>
+     */
     #[ORM\OneToMany(
         targetEntity: AbstractCapAssignment::class,
         mappedBy: 'slots',
@@ -32,17 +47,22 @@ class Pager
     )]
     private Collection $slots;
 
+    /**
+     * @param string                  $label  see property description
+     * @param int                     $number see property description
+     * @param AbstractCapAssignment[] $slots  list of assignments
+     */
     public function __construct(
         string $label,
         int $number,
-        ArrayCollection $slots = new ArrayCollection(),
+        array $slots = [],
     ) {
-        $this->slots = $slots;
+        $this->slots = new ArrayCollection($slots);
         $this->label = $label;
         $this->number = $number;
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -52,53 +72,69 @@ class Pager
         return $this->label;
     }
 
-    private function isInSlotBounds(int $slot): bool
+    private function isInSlotBounds(Slot $slot): bool
     {
-        return ($slot >= self::PAGER_SLOT_MIN) && ($slot <= self::PAGER_SLOT_MAX);
+        return ($slot->getSlot() >= self::PAGER_SLOT_MIN) && ($slot->getSlot() <= self::PAGER_SLOT_MAX);
     }
 
-    public function getCapAssignment(int $atSlot): AbstractCapAssignment
+    public function getCapAssignment(Slot $atSlot): ?AbstractCapAssignment
     {
         if (!$this->isInSlotBounds($atSlot)) {
-            throw new \InvalidArgumentException('Trying to access out of bounds slot!');
+            throw new InvalidArgumentException('Trying to access out of bounds slot!');
         }
 
-        return $this->slots->get($atSlot);
+        return $this->slots->get($atSlot->getSlot());
     }
 
+    /**
+     * @return AbstractCapAssignment[]
+     */
     public function getCapAssignments(): iterable
     {
         return $this->slots->toArray();
     }
 
-    public function assignCap(AbstractCapAssignment $assignment): static
+    public function assignIndividualCap(Slot $slot,
+        CapCode $capCode,
+        bool $audible,
+        bool $vibration): static
     {
-        $this->slots->set($assignment->getSlot(), $assignment);
+        $assignment = new IndividualCapAssignment($this, $slot, $capCode, $audible, $vibration);
+
+        // NOTE: Should probably inform the caller, that, if the slot is already taken,
+        //       the previous assignment is now overwritten (or provide an option not
+        //       to do that)
+        $this->slots->set($assignment->getSlot()->getSlot(), $assignment);
 
         return $this;
     }
 
-    public function assignIndividualCap(IndividualCapAssignment $assignment): static
+    public function assignChannel(Slot $slot, Channel $channel): static
     {
+        $assignment = new ChannelCapAssignment($this, $slot, $channel);
+
         // NOTE: Should probably inform the caller, that, if the slot is already taken,
         //       the previous assignment is now overwritten (or provide an option not
         //       to do that)
-        $this->slots->set($assignment->getSlot(), $assignment);
+        $this->slots->set($assignment->getSlot()->getSlot(), $assignment);
+
         return $this;
     }
 
-    public function assignChannel(Channel $channel, Slot $slot): static
+    public function clearSlot(Slot $slot): static
     {
         // NOTE: Should probably inform the caller, that, if the slot is already taken,
         //       the previous assignment is now overwritten (or provide an option not
         //       to do that)
-        $this->slots->set($slot, new ChannelCapAssignment($channel));
+        $this->slots->remove($slot->getSlot());
+
+        return $this;
     }
 
     public function setLabel(string $label): static
     {
-        if (strlen($label) > 255 || 0 === strlen($label)) {
-            throw new \InvalidArgumentException('The length of the new label must be from 0 to 255 characters!');
+        if (strlen($label) > 255 || '' === $label) {
+            throw new InvalidArgumentException('The length of the new label must be from 0 to 255 characters!');
         }
 
         $this->label = $label;

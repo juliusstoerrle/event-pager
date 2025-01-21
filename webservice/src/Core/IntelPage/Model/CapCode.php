@@ -10,7 +10,7 @@ use InvalidArgumentException;
 #[ORM\Embeddable]
 readonly class CapCode
 {
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     private int $code;
 
     private const int CAP_CODE_MAX = 9999;

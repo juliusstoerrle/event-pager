@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\IntelPage\Model;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -7,12 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 readonly class IndividualCapAssignment extends AbstractCapAssignment
 {
-    public const string DISCRIMINATOR = 'individualcapassignment';
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private int $id;
+    public const string DISCRIMINATOR = 'in';
 
     #[ORM\Embedded]
     private CapCode $capCode;
@@ -23,21 +20,22 @@ readonly class IndividualCapAssignment extends AbstractCapAssignment
     #[ORM\Column]
     private bool $vibration;
 
-    public function __construct(bool $audible, bool $vibration, CapCode $capCode)
-    {
+    public function __construct(
+        Pager $pager,
+        Slot $slot,
+        CapCode $capCode,
+        bool $audible,
+        bool $vibration,
+    ) {
+        parent::__construct($pager, $slot);
+        $this->capCode = $capCode;
         $this->audible = $audible;
         $this->vibration = $vibration;
-        $this->capCode = $capCode;
     }
 
     public function getCapCode(): CapCode
     {
         return $this->capCode;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function isAudible(): bool
