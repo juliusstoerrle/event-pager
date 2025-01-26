@@ -19,6 +19,7 @@
         "symfony/dotenv": "7.1.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.1.*",
+        "symfony/messenger": "7.1.*",
         "symfony/monolog-bundle": "^3.0",
         "symfony/runtime": "7.1.*",
         "symfony/stimulus-bundle": "2.19.*",
@@ -110,6 +111,7 @@
         "symfony/css-selector": "7.1.*",
         "symfony/debug-bundle": "7.1.*",
         "symfony/stopwatch": "7.1.*",
-        "symfony/web-profiler-bundle": "7.1.*"
+        "symfony/web-profiler-bundle": "7.1.*",
+        "zenstruck/foundry": "^2.3"
     }
 }

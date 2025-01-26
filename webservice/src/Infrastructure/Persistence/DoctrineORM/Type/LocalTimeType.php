@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Doctrine\DBAL\Type;
+namespace App\Infrastructure\Persistence\DoctrineORM\Type;
 
 use Brick\DateTime\LocalTime;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -38,8 +38,6 @@ final class LocalTimeType extends Type
      * @template T
      *
      * @param T $value
-     *
-     * @return (T is null ? null : LocalTime)
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?LocalTime
     {
