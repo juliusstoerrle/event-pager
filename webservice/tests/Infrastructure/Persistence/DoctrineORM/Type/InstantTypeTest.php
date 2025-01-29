@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Infrastructure\Doctrine\DBAL\Type;
+namespace App\Tests\Infrastructure\Persistence\DoctrineORM\Type;
 
-use App\Infrastructure\Doctrine\DBAL\Type\InstantType;
+use App\Infrastructure\Persistence\DoctrineORM\Type\InstantType;
 use Brick\DateTime\Instant;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;

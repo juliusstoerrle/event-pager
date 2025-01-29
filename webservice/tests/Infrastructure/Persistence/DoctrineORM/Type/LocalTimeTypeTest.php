@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Infrastructure\Doctrine\DBAL\Type;
+namespace App\Tests\Infrastructure\Persistence\DoctrineORM\Type;
 
-use App\Infrastructure\Doctrine\DBAL\Type\LocalDateTimeType;
-use Brick\DateTime\LocalDateTime;
+use App\Infrastructure\Persistence\DoctrineORM\Type\LocalTimeType;
+use Brick\DateTime\LocalTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Types\ConversionException;
@@ -14,30 +15,28 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(LocalDateTimeType::class)]
+#[CoversClass(LocalTimeType::class)]
 #[Small()]
-final class LocalDateTimeTypeTest extends TestCase
+final class LocalTimeTypeTest extends TestCase
 {
     /**
-     * @return array{0: ?string, 1: ?LocalDateTime}[]
+     * @return array{0: ?string, 1: ?LocalTime}[]
      */
     public static function convertToDatabaseValueProvider(): array
     {
         return [
             [null, null],
-            ['2024-11-30T00:00', LocalDateTime::of(2024, 11, 30)],
-            ['2024-11-30T12:34:56.123456789', LocalDateTime::of(2024, 11, 30, 12, 34, 56, 123456789)],
-            ['-123456-11-30T12:34:56.123456789', LocalDateTime::of(-123456, 11, 30, 12, 34, 56, 123456789)],
-            ['-999999-01-01T00:00', LocalDateTime::min()],
-            ['999999-12-31T23:59:59.999999999', LocalDateTime::max()],
+            ['00:00', LocalTime::of(0, 0)],
+            ['12:34:56', LocalTime::of(12, 34, 56)],
+            ['23:59:59.999999999', LocalTime::of(23, 59, 59, 999999999)],
         ];
     }
 
     #[DataProvider('convertToDatabaseValueProvider')]
-    public function testConvertToDatabaseValue(?string $expected, ?LocalDateTime $value): void
+    public function testConvertToDatabaseValue(?string $expected, ?LocalTime $value): void
     {
         $platform = $this->createMock(AbstractPlatform::class);
-        $type = new LocalDateTimeType();
+        $type = new LocalTimeType();
 
         $result = $type->convertToDatabaseValue($value, $platform);
 
@@ -51,7 +50,9 @@ final class LocalDateTimeTypeTest extends TestCase
     {
         return [
             [true],
+            [47.11],
             ['abcdef'],
+            [new DateTimeImmutable()],
         ];
     }
 
@@ -59,7 +60,7 @@ final class LocalDateTimeTypeTest extends TestCase
     public function testConvertToDatabaseValueException(mixed $value): void
     {
         $platform = $this->createMock(AbstractPlatform::class);
-        $type = new LocalDateTimeType();
+        $type = new LocalTimeType();
 
         self::expectException(ConversionException::class);
 
@@ -67,23 +68,26 @@ final class LocalDateTimeTypeTest extends TestCase
     }
 
     /**
-     * @return array{0: ?LocalDateTime, 1: ?string}[]
+     * @return array{0: ?LocalTime, 1: ?string}[]
      */
     public static function convertToPhpValueProvider(): array
     {
         return [
             [null, null],
-            [LocalDateTime::of(2024, 11, 30), '2024-11-30T00:00'],
-            [LocalDateTime::of(2024, 11, 30, 12, 34, 56, 123456789), '2024-11-30T12:34:56.123456789'],
-            [LocalDateTime::of(-123456, 11, 30, 12, 34, 56, 123456789), '-123456-11-30T12:34:56.123456789'],
+            [LocalTime::of(0, 0), '00:00'],
+            [LocalTime::of(0, 0), '00:00:00'],
+            [LocalTime::of(0, 0), '00:00:00.000'],
+            [LocalTime::of(12, 34, 56), '12:34:56'],
+            [LocalTime::of(12, 34, 56, 123456789), '12:34:56.123456789'],
+            [LocalTime::of(23, 59, 59, 999999999), '23:59:59.999999999'],
         ];
     }
 
     #[DataProvider('convertToPhpValueProvider')]
-    public function testConvertToPhpValue(?LocalDateTime $expected, ?string $value): void
+    public function testConvertToPhpValue(?LocalTime $expected, ?string $value): void
     {
         $platform = $this->createMock(AbstractPlatform::class);
-        $type = new LocalDateTimeType();
+        $type = new LocalTimeType();
 
         $result = $type->convertToPHPValue($value, $platform);
 
@@ -102,7 +106,9 @@ final class LocalDateTimeTypeTest extends TestCase
     {
         return [
             [''],
-            ['.0'],
+            ['0'],
+            ['0:00'],
+            ['24:00'],
             ['abcdef'],
         ];
     }
@@ -111,7 +117,7 @@ final class LocalDateTimeTypeTest extends TestCase
     public function testConvertToPhpValueException(mixed $value): void
     {
         $platform = $this->createMock(AbstractPlatform::class);
-        $type = new LocalDateTimeType();
+        $type = new LocalTimeType();
 
         self::expectException(ConversionException::class);
 
@@ -120,9 +126,9 @@ final class LocalDateTimeTypeTest extends TestCase
 
     public function testGetName(): void
     {
-        $type = new LocalDateTimeType();
+        $type = new LocalTimeType();
 
-        self::assertSame(LocalDateTimeType::NAME, $type->getName());
+        self::assertSame(LocalTimeType::NAME, $type->getName());
     }
 
     /**
@@ -133,7 +139,7 @@ final class LocalDateTimeTypeTest extends TestCase
         $mysql = new MySQLPlatform();
 
         return [
-            ['VARCHAR(32)', [], $mysql],
+            ['VARCHAR(18)', [], $mysql],
         ];
     }
 
@@ -143,7 +149,7 @@ final class LocalDateTimeTypeTest extends TestCase
     #[DataProvider('getSqlDeclarationProvider')]
     public function testGetSqlDeclaration(string $expected, array $column, AbstractPlatform $platform): void
     {
-        $type = new LocalDateTimeType();
+        $type = new LocalTimeType();
 
         self::assertSame($expected, $type->getSQLDeclaration($column, $platform));
     }
